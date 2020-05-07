@@ -32,11 +32,31 @@
         <div class="row">
             <el-button @click="routerNameView">命名视图（待重新理解）</el-button>
         </div>
+        <div class="row">
+            <el-button @click="redirectUrl">重定向</el-button>
+        </div>
+        <div class="row">
+            <el-button @click="alias">别名</el-button>
+        </div>
+        <div class="row">
+            <el-button @click="transportParam">路由组件间传参</el-button>
+        </div>
+        <div class="row">
+            <router-link to="/order/before-enter">before-enter路由独享前置守卫</router-link>
+        </div>
+        <div class="row">
+            <router-link to="/order/component-guard">component-guard组件内守卫</router-link>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
+    data(){
+        return {
+            transportParams:[1,2,3]
+        }
+    },
     methods:{
         routerPush(){
             // this.$router.push({path:'/order/detail'});
@@ -51,6 +71,15 @@ export default {
         },
         routerNameView(){
             this.$router.push({path: '/order/multi/view'});
+        },
+        redirectUrl(){
+            this.$router.push({path:'/order/redirect'});
+        },
+        alias(){
+            this.$router.push({path:'/isAlias'});
+        },
+        transportParam(){
+            this.$router.push({name:'OrderParam',params:{param1:11,param2:this.transportParams}});
         }
     }
 }
