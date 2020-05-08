@@ -73,7 +73,9 @@
         <el-container>
             <el-header class="home-header">Header</el-header>
             <el-main class="home-main">
-                <router-view></router-view>
+                <transition name="anim">
+                    <router-view></router-view>
+                </transition>
             </el-main>
         </el-container>
     </el-container>
@@ -117,6 +119,13 @@ export default {
 }
 .el-menu{
     border: none;
+}
+.anim-leave-active,.anim-enter-active{
+    transition: all .3s ease;
+}
+.anim-enter,.anim-leave{
+    opacity: 0;
+    transform: translateX(30px);
 }
 
 </style>
