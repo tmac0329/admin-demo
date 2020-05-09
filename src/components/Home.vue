@@ -68,6 +68,10 @@
                         <el-menu-item index="7-2">企业管理员</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
+                <el-menu-item index="8" @click="$router.push('/order/example-page')">
+                    <i class="el-icon-s-custom"></i>
+                    <span slot="title">示例页面</span>
+                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-container>

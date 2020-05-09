@@ -88,6 +88,10 @@ const router = new Router({
         {
           path:'/order/component-guard',
           component:OrderComponentGuard
+        },
+        {
+          path:'/order/example-page',
+          component:() => import('@/components/order/ExamplePage')
         }
       ]
     }
