@@ -96,10 +96,10 @@
                 </el-tab-pane>
             </el-tabs>
 
-            <el-dialog title="时间设置" :visible.sync="timerDialogVisible" width="700px">
+            <el-dialog :title="'时间设置-' + (this.editDevice.deviceName ? this.editDevice.deviceName : '批量设置')" :visible.sync="timerDialogVisible" width="700px" @close="timerDialogClose">
                 <div class="time-list">
                     <div
-                    v-for="timer in this.editDevice.timers"
+                    v-for="(timer,timerIndex) in this.editDevice.timers"
                     :key="timer.id"
                     class="time-item">
                         <el-popover
@@ -115,7 +115,7 @@
                                 placeholder="选择时间范围"
                                 size="small"
                                 style="width:300px;"
-                                value-format="hh:mm"
+                                value-format="HH:mm"
                                 @change="timerChange($event,timer)">
                                 </el-time-picker>
                         </el-popover>
@@ -134,14 +134,14 @@
                                         <el-checkbox-button label="日">日</el-checkbox-button>
                                     </el-checkbox-group>
                             </el-popover>
-                            <i class="el-icon-close"></i>
+                            <i class="el-icon-close" @click="deleteTimer(timerIndex)"></i>
                         </div>
                     </div>
                 </div>
                 <el-button type="primary" @click="addTimer">添加</el-button>
                 <span slot="footer">
                     <el-button @click="timerDialogVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="timerDialogVisible = false">确 定</el-button>
+                    <el-button type="primary" @click="timerConfirm">确 定</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -224,23 +224,32 @@ export default {
             this.selectedDevices = [];
         },
         setTimer(editDevice){
+            // 修改单独设备定时器时取消设备选中状态
+            this.selectedDevices = [];
+            let o = this.deepCopy(editDevice);
             this.timerDialogVisible = true;
-            editDevice.timers.map(item => {
+            o.timers.map(item => {
                 let startArr = item.startTime.split(':');
                 let endArr = item.endTime.split(':');
                 this.$set(item,'duration',[new Date(2016,9,10,parseInt(startArr[0]),parseInt(startArr[1])),new Date(2016,9,11,parseInt(endArr[0]),parseInt(endArr[1]))]);
             });
-            this.editDevice = editDevice;
+            this.editDevice = o;
         },
         timerChange(v,timer){
             timer.startTime = v[0];
             timer.endTime = v[1];
         },
         getRepeatDate(days){
-            return days.join('、');
+            return days.length > 0 ? days.join('、') : '无';
         },
         onTimersSetting(){
-            console.log(this.selectedDevices);
+            if(this.selectedDevices.length <= 0){
+                this.$message.warning('请选择设备');
+                return;
+            }
+            this.timerDialogVisible = true;
+            this.editDevice = {timers:[]};
+            // console.log(this.selectedDevices);
         },
         onTapDevice({deviceId}){
             let deviceIdIndex = this.selectedDevices.indexOf(deviceId);
@@ -264,11 +273,36 @@ export default {
         },
         addTimer(){
             this.editDevice.timers.push({
-                            startTime:'00:00',
-                            endTime:'01:00',
+                            startTime:'开始时间',
+                            endTime:'结束时间',
                             repeat:[],
-                            duration:[new Date(),new Date()]
+                            duration:['','']
                         });
+        },
+        deleteTimer(timerIndex){
+            this.editDevice.timers.splice(timerIndex,1);
+        },
+        timerDialogClose(){
+            this.editDevice = {};
+        },
+        timerConfirm(){
+            if(this.selectedDevices.length > 0){
+                console.log('批量修改',this.selectedDevices,this.editDevice.timers);
+            }else if(this.editDevice){
+                console.log('修改单条',this.editDevice.deviceId,this.editDevice.timers);
+            }
+            this.timerDialogVisible = false;
+        },
+        deepCopy(obj){
+            let o = Array.isArray(obj) ? [] : {};
+            for(const key in obj){
+                if(typeof(obj[key]) === 'object'){
+                    o[key] = this.deepCopy(obj[key]);
+                }else{
+                    o[key] = obj[key];
+                }
+            }
+            return o;
         }
     }
 }
