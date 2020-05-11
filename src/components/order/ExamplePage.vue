@@ -12,7 +12,7 @@
                     <el-option label="卫生间" value="3"></el-option>
                     <el-option label="餐厅" value="4"></el-option>
                 </el-select>
-                <el-button type="primary" size="mini" icon="el-icon-s-platform" class="tab-add-btn">添加设备</el-button>
+                <el-button type="primary" size="mini" icon="el-icon-s-platform" class="tab-add-btn" @click="addDeviceDialogVisible = true">添加设备</el-button>
             </div>
             <el-tabs v-model="currentTabStatus" @tab-click="tabChange">
                 <el-tab-pane label="工作中设备" name="atwork" class="tab-content" >
@@ -39,11 +39,11 @@
                                     </div>
                                     <div class="footer">
                                         <el-button type="text" class="item" @click.stop="setTimer(device)">定时设置</el-button>
-                                        <el-button type="text" class="item">紧急停止</el-button>
-                                        <el-button type="text" class="item">转故障</el-button>
+                                        <el-button type="text" class="item" @click.stop="stopDevice(device)">紧急停止</el-button>
+                                        <el-button type="text" class="item" @click.stop="fixDevice(device)">转故障</el-button>
                                     </div>
                                 </div>
-                                <i class="el-icon-delete btn-detele"></i>
+                                <i class="el-icon-delete btn-detele" @click.stop="deleteDevice(device)"></i>
                             </div>
                         </el-card>
                     </el-checkbox-group>
@@ -95,7 +95,8 @@
                     </div>
                 </el-tab-pane>
             </el-tabs>
-
+            
+            <!-- 定时设置弹窗 -->
             <el-dialog :title="'时间设置-' + (this.editDevice.deviceName ? this.editDevice.deviceName : '批量设置')" :visible.sync="timerDialogVisible" width="700px" @close="timerDialogClose">
                 <div class="time-list">
                     <div
@@ -144,6 +145,62 @@
                     <el-button type="primary" @click="timerConfirm">确 定</el-button>
                 </span>
             </el-dialog>
+
+            <!-- 添加设备弹窗 -->
+            <el-dialog
+                title="添加设备"
+                :visible.sync="addDeviceDialogVisible"
+                width="440px"
+                :closed="addDeviecDialogClose('addDeviceForm')">
+                <div class="form-container">
+                    <el-form 
+                    ref="addDeviceForm" 
+                    :model="addingDeviceForm" 
+                    :rules="addingDeviceRules" 
+                    label-width="80px" 
+                    label-position="left"
+                    :hide-required-asterisk="true">
+                        <el-form-item label="设备ID" prop="deviceId">
+                            <el-input v-model="addingDeviceForm.deviceId" class="form-comp"></el-input>
+                        </el-form-item>
+                        <el-form-item label="消杀区域" prop="category">
+                            <el-select v-model="addingDeviceForm.category" placeholder="请选择消杀区域" class="form-comp">
+                            <el-option label="教室" value="1"></el-option>
+                            <el-option label="办公室" value="2"></el-option>
+                            <el-option label="食堂" value="3"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="二级区域" prop="categorySecond">
+                            <el-select v-model="addingDeviceForm.categorySecond" placeholder="请选择二级消杀区域" class="form-comp">
+                            <el-option label="教室101" value="11"></el-option>
+                            <el-option label="教室102" value="22"></el-option>
+                            <el-option label="教室103" value="33"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="设备名称" prop="deviceName">
+                            <el-input v-model="addingDeviceForm.deviceName" class="form-comp"></el-input>
+                        </el-form-item>
+                        <el-form-item label="设备照片">
+                            <el-upload
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                list-type="picture-card"
+                                class="upload-middle">
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="设备状态">
+                            <el-radio-group v-model="addingDeviceForm.deviceStatus">
+                                <el-radio label="正常"></el-radio>
+                                <el-radio label="故障"></el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="addDeviceDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addingDeviceConfirm('addDeviceForm')">确 定</el-button>
+                </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -155,8 +212,8 @@ export default {
             searchDeviceStatus: '1',
             searchDeviceArea: '1',
             timerDialogVisible:false,
+            addDeviceDialogVisible:false,
             checkAll:false,
-            form:{},
             // 模拟数据
             devices:[
                 {
@@ -212,6 +269,25 @@ export default {
                 }
             ],
             editDevice:{},
+            addingDeviceForm:{
+                deviceId:'',
+                deviceName:'',
+                deviceStatus:'正常'
+            },
+            addingDeviceRules:{
+                deviceId: [
+                    { required: true, message: '请输入设备ID', trigger: 'blur' }
+                ],
+                category: [
+                    { required: true, message: '请选择消杀区域', trigger: 'change' }
+                ],
+                categorySecond: [
+                    { required: true, message: '请选择消杀二级区域', trigger: 'change' }
+                ],
+                deviceName: [
+                    { required: true ,message: '请输入设备名称', trigger: 'blur' }
+                ]
+            },
             selectedDevices:[]
         }
     },
@@ -292,6 +368,51 @@ export default {
                 console.log('修改单条',this.editDevice.deviceId,this.editDevice.timers);
             }
             this.timerDialogVisible = false;
+        },
+        deleteDevice(device){
+            this.$alert(`确认删除 ${device.deviceName} ？`,'',{
+                callback: action => {
+                    this.$message({
+                    type: 'success',
+                    message: `删除成功`
+                    });
+                }
+            });
+        },
+        stopDevice(device){
+            this.$alert(`是否紧急停止 ${device.deviceName} ？`,'',{
+                callback: action => {
+                    this.$message({
+                    type: 'success',
+                    message: `停止成功`
+                    });
+                }
+            });
+        },
+        fixDevice(device){
+            this.$alert(`${device.deviceName} 申报故障？`,'',{
+                callback: action => {
+                    this.$message({
+                    type: 'success',
+                    message: `申报成功`
+                    });
+                }
+            });
+        },
+        addingDeviceConfirm(){
+            this.$refs[addingFormName].validate((vaild) => {
+                if(vaild){
+                    console.log(this.addingDeviceForm);
+                    this.addDeviceDialogVisible = false;
+                }else{
+                    return false;
+                }
+            });
+        },
+        addDeviecDialogClose(addingFormName){
+            if(!this.addDeviceDialogVisible && this.$refs[addingFormName]){
+                this.$refs[addingFormName].resetFields();
+            }
         },
         deepCopy(obj){
             let o = Array.isArray(obj) ? [] : {};
@@ -411,6 +532,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 16px;
 }
 .ft-opts{
     display: flex;
@@ -468,5 +590,12 @@ export default {
 }
 .checkbox-fixed{
     margin-right: -10px;
+}
+.form-container{
+    width: 360px;
+    margin: 0 auto;
+}
+.form-comp{
+    width: 260px;
 }
 </style>

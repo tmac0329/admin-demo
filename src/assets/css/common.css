@@ -1,0 +1,13 @@
+.upload-middle .el-upload--picture-card{
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+}
+.upload-middle .el-upload--picture-card i{
+    font-size: 16px;
+}
+.upload-middle .el-upload-list--picture-card .el-upload-list__item{
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+}
