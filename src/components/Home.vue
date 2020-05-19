@@ -5,13 +5,25 @@
                 <img src="../assets/logo_xhotel.png" alt="">
             </div>
             <el-menu default-active="2">
+                <el-menu-item index="8" @click="$router.push('/order/example-page')">
+                    <i class="el-icon-s-custom"></i>
+                    <span slot="title">示例页面</span>
+                </el-menu-item>
+                <el-menu-item index="9" @click="$router.push('/order/list')">
+                    <i class="el-icon-s-custom"></i>
+                    <span slot="title">router学习</span>
+                </el-menu-item>
+                <el-menu-item index="10" @click="$router.push('/vuex/study')">
+                    <i class="el-icon-s-custom"></i>
+                    <span slot="title">vuex学习</span>
+                </el-menu-item>
                 <el-submenu index="1">
                     <template slot="title">
                         <i class="el-icon-s-order"></i>
                         <span>订单</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="1-1">预订</el-menu-item>
+                        <el-menu-item index="1-1" @click="$router.push('/order/list')">预订</el-menu-item>
                         <el-menu-item index="1-2">入住</el-menu-item>
                         <el-menu-item index="1-3">退房</el-menu-item>
                     </el-menu-item-group>
@@ -68,10 +80,6 @@
                         <el-menu-item index="7-2">企业管理员</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
-                <el-menu-item index="8" @click="$router.push('/order/example-page')">
-                    <i class="el-icon-s-custom"></i>
-                    <span slot="title">示例页面</span>
-                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-container>

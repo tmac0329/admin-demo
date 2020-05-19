@@ -12,6 +12,7 @@ import OrderAlias from '@/components/order/Alias';
 import OrderParam from '@/components/order/Params';
 import OrderBeforeEnter from '@/components/order/BeforeEnter';
 import OrderComponentGuard from '@/components/order/ComponentGuard';
+import VuexStudyPage from '@/components/study/VuexStudyPage';
 
 Vue.use(Router)
 
@@ -92,6 +93,11 @@ const router = new Router({
         {
           path:'/order/example-page',
           component:() => import('@/components/order/ExamplePage')
+        },
+        {
+          name:'VuexStudyPage',
+          path:'/vuex/study',
+          component:VuexStudyPage
         }
       ]
     }
