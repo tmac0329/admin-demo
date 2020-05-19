@@ -399,7 +399,7 @@ export default {
                 }
             });
         },
-        addingDeviceConfirm(){
+        addingDeviceConfirm(addingFormName){
             this.$refs[addingFormName].validate((vaild) => {
                 if(vaild){
                     console.log(this.addingDeviceForm);
