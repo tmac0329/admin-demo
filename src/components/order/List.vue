@@ -47,6 +47,9 @@
         <div class="row">
             <router-link to="/order/component-guard">component-guard组件内守卫</router-link>
         </div>
+        <div class="row">
+            <el-button @click="paramPersist">路由传参持久化（刷新仍生效）</el-button>
+        </div>
     </div>
 </template>
 
@@ -80,6 +83,15 @@ export default {
         },
         transportParam(){
             this.$router.push({name:'OrderParam',params:{param1:11,param2:this.transportParams}});
+        },
+        paramPersist(){
+            this.$router.push({
+                path:'/router/param-persist',
+                query:{
+                    a:1,
+                    name:'Tom'
+                }
+            })
         }
     }
 }

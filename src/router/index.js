@@ -98,6 +98,14 @@ const router = new Router({
           name:'VuexStudyPage',
           path:'/vuex/study',
           component:VuexStudyPage
+        },
+        {
+          path:'/router/param-persist',
+          component: () => import('@/components/order/Persist')
+        },
+        {
+          path:'/study/base',
+          component: () => import('@/components/study/VueBase')
         }
       ]
     }

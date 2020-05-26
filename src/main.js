@@ -12,6 +12,38 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
+Vue.directive('focus',{
+  inserted:function(el){
+    el.focus();
+  }
+})
+
+Vue.directive('autocomplete',{
+  bind:()=>{
+    console.log('bind');
+  },
+  inserted:(el,binding)=>{
+    console.log('inserted');
+    el.value = '1111';
+    console.log(el.dataset.pro);
+    console.log(binding);
+  },
+  update:()=>{
+    console.log('update');
+  },
+  componentUpdated:()=>{
+    console.log('componentUpdated');
+  },
+  unbind:()=>{
+    console.log('unbind')
+  }
+})
+
+Vue.filter('formateName',function(value){
+  if(!value){return ''}
+  return value.toUpperCase()
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
